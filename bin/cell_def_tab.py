@@ -6557,10 +6557,10 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
     def update_intracellular_params(self):
         cdname = self.current_cell_def
         if self.param_d[cdname]["intracellular"] is not None:
-            print("debugging itracellular type")
+            print("debugging intracellular type")
             print(self.param_d[cdname]["intracellular"])
             if self.param_d[cdname]["intracellular"]["type"] == "maboss":
-                
+
                 self.physiboss_clear_initial_values()
                 self.physiboss_clear_mutants()
                 self.physiboss_clear_parameters()
@@ -6569,7 +6569,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                 self.physiboss_clear_outputs()
 
                 self.intracellular_type_dropdown.setCurrentIndex(1)
-                if "bnd_filename" in self.param_d[cdname]["intracellular"].keys(): 
+                if "bnd_filename" in self.param_d[cdname]["intracellular"].keys():
                     self.physiboss_bnd_file.setText(self.param_d[cdname]["intracellular"]["bnd_filename"])
                 if "cfg_filename" in self.param_d[cdname]["intracellular"].keys():
                     self.physiboss_cfg_file.setText(self.param_d[cdname]["intracellular"]["cfg_filename"])
@@ -6591,13 +6591,13 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                 self.physiboss_update_list_behaviours()
                 self.physiboss_update_list_nodes()
                 self.physiboss_update_list_parameters()
-                
+
                 for i, node_inheritance in enumerate(self.param_d[cdname]["intracellular"]["node_inheritance"]):
                     self.physiboss_add_node_inheritance()
                     node, flag, _, _ = self.physiboss_node_specific_inheritance[i]
                     node.setCurrentIndex(self.param_d[cdname]["intracellular"]["list_nodes"].index(node_inheritance["node"]))
                     flag.setChecked(node_inheritance["flag"] == "True")
-                    
+
                 for i, initial_value in enumerate(self.param_d[cdname]["intracellular"]["initial_values"]):
                     self.physiboss_add_initial_values()
                     node, value, _, _ = self.physiboss_initial_states[i]
@@ -6626,7 +6626,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                     name.setCurrentIndex(self.param_d[cdname]["intracellular"]["list_parameters"].index(parameter["name"]))
                     value.setText(parameter["value"])
 
-                
+
                 for i, input in enumerate(self.param_d[cdname]["intracellular"]["inputs"]):
                     self.physiboss_add_input()
                     name, node, action, threshold, inact_threshold, smoothing, _, _ = self.physiboss_inputs[i]
@@ -6659,14 +6659,13 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                 print("------ Parsing roadrunner intracellular params")
                 self.ode_sbml_frame.fill_gui(cdname)
                 self.intracellular_type_dropdown.setCurrentIndex(2)
-                # if "sbml_filename" in self.param_d[cdname]["intracellular"].keys(): 
+                # if "sbml_filename" in self.param_d[cdname]["intracellular"].keys():
                     # self.ode_sbml_frame.sbml_file.setText(self.param_d[cdname]["intracellular"]["sbml_filename"])
 
             elif self.param_d[cdname]["intracellular"]["type"] == "dfba":
                 print("------ Parsing dFBA intracellular params")
                 # Clear any existing dFBA-specific entries
                 self.clear_transport_exchanges()
-                self.clear_growth_model_params()
                 # Set the dropdown to the appropriate type for dFBA
                 self.intracellular_type_dropdown.setCurrentIndex(3)
                 # SBML Filename
@@ -6696,9 +6695,12 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                 # Populate Growth Model Parameters
                 if "growth_model" in self.param_d[cdname]["intracellular"]:
                     growth_model = self.param_d[cdname]["intracellular"]["growth_model"]
-                    self.cell_density.setText(growth_model.get("cell_density", ""))
-                    self.max_growth_rate.setText(growth_model.get("max_growth_rate", ""))
-                    self.objective_reaction.setText(growth_model.get("objective_reaction", ""))
+                    if "cell_density" in growth_model:
+                        self.cell_density.setText(growth_model["cell_density"])
+                    if "max_growth_rate" in growth_model:
+                        self.max_growth_rate.setText(growth_model["max_growth_rate"])
+                    if "objective_reaction" in growth_model:
+                        self.objective_reaction.setText(growth_model["objective_reaction"])
 
 
         else:
@@ -6741,15 +6743,15 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                 #------------- name
                 # self.custom_data_table.cellWidget(idx,self.custom_icol_name).setText(key)   # rwh: tricky; custom var name
                 self.custom_data_table.cellWidget(irow,self.custom_icol_name).setText(key)   # rwh: tricky; custom var name
-                self.custom_data_table.cellWidget(irow,self.custom_icol_name).prev = key 
+                self.custom_data_table.cellWidget(irow,self.custom_icol_name).prev = key
 
                 # self.custom_data_table.cellWidget(idx,self.custom_icol_name).setStyleSheet("color: black;")
 
                 #------------- value
-                self.custom_data_table.cellWidget(irow,self.custom_icol_value).setText(self.param_d[cdname]['custom_data'][key][0]) 
+                self.custom_data_table.cellWidget(irow,self.custom_icol_value).setText(self.param_d[cdname]['custom_data'][key][0])
 
                 #------------- conserved
-                self.custom_data_table.cellWidget(irow,self.custom_icol_conserved).setChecked(self.param_d[cdname]['custom_data'][key][1]) 
+                self.custom_data_table.cellWidget(irow,self.custom_icol_conserved).setChecked(self.param_d[cdname]['custom_data'][key][1])
 
 
                 # NOTE: the following two (units, desc) are the same across all cell types
@@ -6767,13 +6769,13 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
     def update_misc_params(self):
         cdname = self.current_cell_def
         self.par_dist_cell_type_disabled_checkbox.setText(f"Disable all parameter distributions for {cdname}")
-        self.par_dist_display_button.setText(f"Display/update parameter distributions for {cdname}")    
+        self.par_dist_display_button.setText(f"Display/update parameter distributions for {cdname}")
         if self.param_d[cdname]["par_dists_disabled"] != self.par_dist_cell_type_disabled_checkbox.isChecked():
             self.par_dist_cell_type_disabled_checkbox.setChecked(self.param_d[cdname]["par_dists_disabled"])
         else:
             state = QtCore.Qt.Checked if self.param_d[cdname]["par_dists_disabled"] else QtCore.Qt.Unchecked
             self.par_dist_cell_type_disabled_checkbox.stateChanged.emit(state)
-            
+
         if self.param_d[cdname]["par_dists_disabled"]:
             self.par_dist_enable_checkbox.setChecked(False)
             self.par_dist_enforce_base_checkbox.setChecked(False)
@@ -6837,9 +6839,9 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
     #-------------------------------------------------------------------
     # Read values from the GUI widgets and generate/write a new XML
     def fill_xml_cycle(self,pheno,cdef):
-        # ------- cycle ------- 
-        # <cycle code="5" name="live">  
-        # <cycle code="6" name="Flow cytometry model (separated)">  
+        # ------- cycle -------
+        # <cycle code="5" name="live">
+        # <cycle code="6" name="Flow cytometry model (separated)">
 
 
         # self.cycle_dropdown.addItem("live cells")   # 0 -> 0
@@ -6854,12 +6856,12 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
         # static const int flow_cytometry_cycle_model=2;
         # static const int live_apoptotic_cycle_model=3;
         # static const int total_cells_cycle_model=4;
-        # static const int live_cells_cycle_model = 5; 
-        # static const int flow_cytometry_separated_cycle_model = 6; 
-        # static const int cycling_quiescent_model = 7; 
+        # static const int live_cells_cycle_model = 5;
+        # static const int flow_cytometry_separated_cycle_model = 6;
+        # static const int cycling_quiescent_model = 7;
 
         # self.cycle_combo_idx_code = {0:"5", 1:"1", 2:"0", 3:"2", 4:"6", 5:"7"}
-        # TODO: check if these names must be specific in the C++ 
+        # TODO: check if these names must be specific in the C++
         # self.cycle_combo_idx_name = {0:"live", 1:"basic Ki67", 2:"advanced Ki67", 3:"flow cytometry", 4:"Flow cytometry model (separated)", 5:"cycling quiescent"}
 
         combo_widget_idx = self.param_d[cdef]["cycle_choice_idx"]
@@ -7352,7 +7354,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
         logging.debug(f'--- cell_adhesion_affinity= {self.param_d[cdef]["cell_adhesion_affinity"]}')
         for key in self.param_d[cdef]['cell_adhesion_affinity'].keys():
             # argh, not sure why this is necessary, but without it, we can get empty entries if we read in a saved mymodel.xml
-            if len(key) == 0:  
+            if len(key) == 0:
                 continue
             val = self.param_d[cdef]['cell_adhesion_affinity'][key]
             logging.debug(f'{key}  --> {val}')
@@ -7370,14 +7372,14 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
         if self.param_d[cdef]['mechanics_relative_equilibrium_distance_enabled']:
             bval = "true"
         subelm = ET.SubElement(elm, 'set_relative_equilibrium_distance',{"enabled":bval, "units":"dimensionless"})
-        subelm.text = self.param_d[cdef]['mechanics_relative_equilibrium_distance'] 
+        subelm.text = self.param_d[cdef]['mechanics_relative_equilibrium_distance']
         subelm.tail = self.indent14
 
         bval = "false"
         if self.param_d[cdef]['mechanics_absolute_equilibrium_distance_enabled']:
             bval = "true"
         subelm = ET.SubElement(elm, 'set_absolute_equilibrium_distance',{"enabled":bval, "units":"micron"})
-        subelm.text = self.param_d[cdef]['mechanics_absolute_equilibrium_distance'] 
+        subelm.text = self.param_d[cdef]['mechanics_absolute_equilibrium_distance']
         subelm.tail = self.indent12
 
         # new_stuff (June 2022) mechanics params
@@ -7420,7 +7422,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
         elm = ET.SubElement(motility, 'persistence_time',{"units":"min"})
         elm.text = self.param_d[cdef]['persistence_time']
         elm.tail = self.indent12
-        
+
         elm = ET.SubElement(motility, 'migration_bias',{"units":"dimensionless"})
         elm.text = self.param_d[cdef]['migration_bias']
         elm.tail = self.indent12
@@ -7585,7 +7587,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
             elm = ET.SubElement(lpr, 'phagocytosis_rate', {"name":key, "units":self.default_rate_units})
             elm.text = val
             elm.tail = self.indent16
-            
+
         # elm.tail = "\n" + self.indent10
 
         #-----
@@ -7596,7 +7598,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
         logging.debug(f'--- attack_rate= {self.param_d[cdef]["attack_rate"]}')
         for key in self.param_d[cdef]['attack_rate'].keys():
             # argh, not sure why this is necessary, but without it, we can get empty entries if we read in a saved mymodel.xml
-            if len(key) == 0:  
+            if len(key) == 0:
                 continue
             val = self.param_d[cdef]['attack_rate'][key]
             logging.debug(f'{key}  --> {val}')
@@ -7686,7 +7688,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                 print(f'------ fill_xml_intracellular:  {self.param_d[cdef]["intracellular"]}')
 
                 if self.param_d[cdef]['intracellular']['type'] == "maboss":
-                            
+
                     # Checking if you should prevent saving because of missing input
                     if 'bnd_filename' not in self.param_d[cdef]['intracellular'] or self.param_d[cdef]['intracellular']['bnd_filename'] in [None, ""]:
                         raise CellDefException("Missing BND file in the " + cdef + " cell definition ")
@@ -7710,35 +7712,35 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                         initial_values = ET.SubElement(intracellular, "initial_values")
                         initial_values.text = self.indent14
                         initial_values.tail = self.indent12
-                        
+
                         for initial_value_def in self.param_d[cdef]['intracellular']['initial_values']:
                             if initial_value_def["node"] != "" and initial_value_def["value"] != "":
                                 initial_value = ET.SubElement(initial_values, "initial_value", {"intracellular_name": initial_value_def["node"]})
                                 initial_value.text = initial_value_def["value"]
                                 initial_value.tail = self.indent14
                         initial_value.tail = self.indent12
-                        
+
                     # Settings
                     settings = ET.SubElement(intracellular, "settings")
                     settings.text = self.indent14
                     settings.tail = self.indent12
-                
+
                     time_step = ET.SubElement(settings, "intracellular_dt")
                     time_step.text = self.param_d[cdef]['intracellular']['time_step']
                     time_step.tail = self.indent14
-                    
+
                     time_stochasticity = ET.SubElement(settings, "time_stochasticity")
                     time_stochasticity.text = self.param_d[cdef]['intracellular']['time_stochasticity']
                     time_stochasticity.tail = self.indent14
-                    
+
                     scaling = ET.SubElement(settings, "scaling")
                     scaling.text = self.param_d[cdef]['intracellular']['scaling']
                     scaling.tail = self.indent12
-                    
+
                     start_time = ET.SubElement(settings, "start_time")
                     start_time.text = self.param_d[cdef]['intracellular']['start_time']
                     start_time.tail = self.indent12
-                    
+
                     inheritance = ET.SubElement(settings, "inheritance", {"global": self.param_d[cdef]['intracellular']['global_inheritance']})
                     if len(self.param_d[cdef]["intracellular"]["node_inheritance"]) > 0:
                         for node_inheritance_def in self.param_d[cdef]["intracellular"]["node_inheritance"]:
@@ -7752,7 +7754,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                         mutants = ET.SubElement(settings, "mutations")
                         mutants.text = self.indent16
                         mutants.tail = self.indent14
-                        
+
                         for mutant_def in self.param_d[cdef]["intracellular"]["mutants"]:
                             if mutant_def["node"] != "" and mutant_def["value"] != "":
                                 mutant = ET.SubElement(mutants, "mutation", {"intracellular_name": mutant_def["node"]})
@@ -7767,7 +7769,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                         parameters = ET.SubElement(settings, "parameters")
                         parameters.text = self.indent16
                         parameters.tail = self.indent14
-                        
+
                         for parameter_def in self.param_d[cdef]['intracellular']['parameters']:
                             if parameter_def["name"] != "" and parameter_def["value"] != "":
                                 parameter = ET.SubElement(parameters, "parameter", {"intracellular_name": parameter_def["name"]})
@@ -7784,10 +7786,10 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
 
                         tag_input = None
                         for input in self.param_d[cdef]['intracellular']['inputs']:
-                            
+
                             if input['name'] != '' and input['node'] != '' and input['threshold'] != '' and input['action'] != '':
                                 attribs = {
-                                    'physicell_name': input['name'], 'intracellular_name': input['node'], 
+                                    'physicell_name': input['name'], 'intracellular_name': input['node'],
                                 }
 
                                 tag_input = ET.SubElement(mapping, 'input', attribs)
@@ -7818,19 +7820,19 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                                     t_last_tag = tag_input_smoothing
 
                                 t_last_tag.tail = self.indent14
-                                
+
                         tag_output = None
                         for output in self.param_d[cdef]['intracellular']['outputs']:
 
                             if output['name'] != '' and output['node'] != '' and output['value'] != '' and output['action'] != '':
                                 attribs = {
-                                    'physicell_name': output['name'], 'intracellular_name': output['node'], 
+                                    'physicell_name': output['name'], 'intracellular_name': output['node'],
                                 }
 
                                 tag_output = ET.SubElement(mapping, 'output', attribs)
                                 tag_output.text = self.indent16
                                 tag_output.tail = self.indent12
-                                
+
                                 tag_output_settings = ET.SubElement(tag_output, "settings")
                                 tag_output_settings.text = self.indent18
                                 tag_output_settings.tail = self.indent14
@@ -7850,7 +7852,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                                     tag_output_base_value.text = output["basal_value"]
                                     tag_output_base_value.tail = self.indent18
                                     t_last_tag = tag_output_base_value
-                                
+
                                 if output["smoothing"] != "":
                                     tag_output_smoothing = ET.SubElement(tag_output_settings, "smoothing")
                                     tag_output_smoothing.text = output["smoothing"]
@@ -7858,8 +7860,8 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                                     t_last_tag = tag_output_smoothing
 
                                 t_last_tag.tail = self.indent14
-                                
-                        
+
+
                         if len(self.param_d[cdef]['intracellular']['outputs']) == 0 and tag_input is not None:
                             tag_input.tail = self.indent12
                         elif tag_output is not None:
@@ -7937,7 +7939,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                             objective_reaction_elem.text = self.param_d[cdef]['intracellular']['growth_model'][
                                 "objective_reaction"]
                             objective_reaction_elem.tail = self.indent12
-                    
+
 
         if self.debug_print_fill_xml:
             logging.debug(f'\n')
@@ -7980,7 +7982,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
             # if self.custom_data_conserved[idx].checkState():
                 conserved = "true"
             idx += 1
-            elm = ET.SubElement(custom_data, key_name, 
+            elm = ET.SubElement(custom_data, key_name,
                     { "conserved":conserved,
                       "units":units,
                       "description":desc } )
@@ -8016,7 +8018,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
             dist_type = value["distribution"]
             # remove whitespaces from dist_type
             dist_type = dist_type.replace(" ", "")
-            dist_elm = ET.SubElement(par_dists, "distribution", 
+            dist_elm = ET.SubElement(par_dists, "distribution",
                     { "enabled":enabled,
                       "type":dist_type,
                       "check_base":enforce_base } )
@@ -8092,13 +8094,13 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
 
             # <cell_definition name="round cell" ID="0">
             # 	<phenotype>
-            # 		<cycle code="5" name="live">  
-            # 			<phase_transition_rates units="1/min"> 
+            # 		<cycle code="5" name="live">
+            # 			<phase_transition_rates units="1/min">
             # 				<rate start_index="0" end_index="0" fixed_duration="true">0.000072</rate>
             # 			</phase_transition_rates>
             # 		</cycle>
             # vs.
-                        # <phase_durations units="min"> 
+                        # <phase_durations units="min">
                         # 	<duration index="0" fixed_duration="false">300.0</duration>
                         # 	<duration index="1" fixed_duration="true">480</duration>
                         # 	<duration index="2" fixed_duration="true">240</duration>
@@ -8106,10 +8108,10 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                         # </phase_durations>
                     # print("cell_def_tab.py: fill_xml(): --> ",var.attrib['ID'])
                     if self.auto_number_IDs_checkbox.isChecked():
-                        elm = ET.Element("cell_definition", 
+                        elm = ET.Element("cell_definition",
                                 {"name":cdef, "ID":str(idx)})
                     else:
-                        elm = ET.Element("cell_definition", 
+                        elm = ET.Element("cell_definition",
                                 {"name":cdef, "ID":self.param_d[cdef]["ID"]})  # rwh: if retaining original IDs.
                     elm.tail = '\n' + self.indent6
                     elm.text = self.indent8
@@ -8126,7 +8128,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
                     self.fill_xml_interactions(pheno,cdef)
                     self.fill_xml_intracellular(pheno,cdef)
 
-                    # ------- custom data ------- 
+                    # ------- custom data -------
                     custom_data = ET.SubElement(elm, 'custom_data')
                     custom_data.text = self.indent10
                     custom_data.tail = self.indent6
@@ -8181,7 +8183,7 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
         vbox.addWidget(w)
         vbox.addStretch()
         return vbox
-    
+
     def build_cycle_layouts(self, base_name, n_phases):
         self.build_cycle_layout(base_name, n_phases, "trate")
         self.build_cycle_layout(base_name, n_phases, "duration")
@@ -8242,4 +8244,3 @@ Please fix the IDs in the Cell Types tab. Also, be mindful of how this may affec
         self.idx_stacked_widget += 1
 
         self.stacked_cycle.addWidget(getattr(self, base_name_stack))
-            
